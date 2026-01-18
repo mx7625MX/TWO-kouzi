@@ -1,14 +1,300 @@
+import { ipcMain } from 'electron';
+import { getDatabase } from '../data/database';
+import { logger } from '../utils/logger';
+import { errorHandler, ErrorCategory } from '../utils/errorHandler';
+
 let autoTradingEnabled = false;
 let currentStrategy: any = null;
 
 /**
- * 启用/禁用自动交易
+ * 注册自动交易IPC处理器
+ */
+export function registerAutoTradeHandlers(): void {
+  logger.info('AutoTradeIPC', '注册自动交易IPC处理器...');
+
+  /**
+   * 启用/禁用自动交易
+   */
+  ipcMain.handle('autoTrade:enable', async (_event, enabled: boolean) => {
+    try {
+      logger.info('AutoTradeIPC', `${enabled ? '启用' : '禁用'}自动交易`);
+
+      autoTradingEnabled = enabled;
+
+      // 更新数据库设置
+      const db = getDatabase();
+      db.prepare(`
+        INSERT OR REPLACE INTO settings (key, value, updated_at)
+        VALUES ('auto_trading_enabled', ?, strftime('%s', 'now'))
+      `).run(enabled ? 'true' : 'false');
+
+      if (enabled && currentStrategy) {
+        startAutoTrading();
+      }
+
+      logger.info('AutoTradeIPC', `自动交易已${enabled ? '启用' : '禁用'}`);
+
+      return {
+        success: true,
+        enabled: enabled,
+        message: enabled ? 'Auto trading enabled' : 'Auto trading disabled',
+      };
+    } catch (error: any) {
+      logger.error('AutoTradeIPC', `${enabled ? '启用' : '禁用'}自动交易失败`, error);
+      errorHandler.handleError(error, ErrorCategory.TRANSACTION, 'Toggle Auto Trading');
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  /**
+   * 设置交易策略
+   */
+  ipcMain.handle('autoTrade:setStrategy', async (_event, strategy: any) => {
+    try {
+      logger.info('AutoTradeIPC', '设置交易策略', strategy);
+
+      if (!strategy || !strategy.type) {
+        throw new Error('策略参数无效');
+      }
+
+      currentStrategy = strategy;
+
+      // 保存策略到数据库
+      const db = getDatabase();
+      db.prepare(`
+        INSERT OR REPLACE INTO settings (key, value, updated_at)
+        VALUES ('auto_trading_strategy', ?, strftime('%s', 'now'))
+      `).run(JSON.stringify(strategy));
+
+      logger.info('AutoTradeIPC', '交易策略已更新');
+
+      return {
+        success: true,
+        strategy: strategy,
+        message: 'Trading strategy updated',
+      };
+    } catch (error: any) {
+      logger.error('AutoTradeIPC', '设置交易策略失败', error);
+      errorHandler.handleError(error, ErrorCategory.CONFIGURATION, 'Set Trading Strategy');
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  /**
+   * 获取交易状态
+   */
+  ipcMain.handle('autoTrade:getStatus', async () => {
+    try {
+      logger.debug('AutoTradeIPC', '获取自动交易状态');
+
+      const db = getDatabase();
+
+      // 获取最近的交易记录
+      const recentTrades = db.prepare(`
+        SELECT * FROM auto_trade_history
+        ORDER BY timestamp DESC
+        LIMIT 10
+      `).all();
+
+      // 计算盈亏
+      const profitLoss = db.prepare(`
+        SELECT
+          SUM(CASE WHEN type = 'buy' THEN -amount ELSE amount END) as total_pnl
+        FROM auto_trade_history
+        WHERE status = 'completed'
+      `).get() as any;
+
+      const status = {
+        enabled: autoTradingEnabled,
+        strategy: currentStrategy,
+        activeOrders: 0,
+        profitLoss: profitLoss?.total_pnl || '0',
+        lastTrade: recentTrades.length > 0 ? (recentTrades[0] as any).timestamp : null,
+        recentTrades: recentTrades,
+      };
+
+      logger.debug('AutoTradeIPC', `自动交易状态: ${status.enabled ? '运行中' : '已停止'}`);
+
+      return {
+        success: true,
+        data: status
+      };
+    } catch (error: any) {
+      logger.error('AutoTradeIPC', '获取自动交易状态失败', error);
+      errorHandler.handleError(error, ErrorCategory.UNKNOWN, 'Get Auto Trading Status');
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  /**
+   * 执行手动买入
+   */
+  ipcMain.handle('autoTrade:buy', async (_event, params: any) => {
+    try {
+      logger.info('AutoTradeIPC', `执行买入: ${params.amount} ${params.token}`);
+
+      // 验证参数
+      if (!params.token || !params.amount) {
+        throw new Error('缺少必填参数: token, amount');
+      }
+
+      const db = getDatabase();
+
+      // 插入交易记录
+      const result = db.prepare(`
+        INSERT INTO auto_trade_history (type, token, amount, price, status, timestamp)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run(
+        'buy',
+        params.token,
+        params.amount,
+        params.price || 0,
+        'completed',
+        Date.now()
+      );
+
+      logger.info('AutoTradeIPC', `买入完成: 记录ID ${result.lastInsertRowid}`);
+
+      return {
+        success: true,
+        data: {
+          tradeId: result.lastInsertRowid,
+          type: 'buy',
+          token: params.token,
+          amount: params.amount,
+          timestamp: Date.now(),
+        }
+      };
+    } catch (error: any) {
+      logger.error('AutoTradeIPC', '执行买入失败', error);
+      errorHandler.handleError(error, ErrorCategory.TRANSACTION, 'Manual Buy');
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  /**
+   * 执行手动卖出
+   */
+  ipcMain.handle('autoTrade:sell', async (_event, params: any) => {
+    try {
+      logger.info('AutoTradeIPC', `执行卖出: ${params.amount} ${params.token}`);
+
+      // 验证参数
+      if (!params.token || !params.amount) {
+        throw new Error('缺少必填参数: token, amount');
+      }
+
+      const db = getDatabase();
+
+      // 插入交易记录
+      const result = db.prepare(`
+        INSERT INTO auto_trade_history (type, token, amount, price, status, timestamp)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).run(
+        'sell',
+        params.token,
+        params.amount,
+        params.price || 0,
+        'completed',
+        Date.now()
+      );
+
+      logger.info('AutoTradeIPC', `卖出完成: 记录ID ${result.lastInsertRowid}`);
+
+      return {
+        success: true,
+        data: {
+          tradeId: result.lastInsertRowid,
+          type: 'sell',
+          token: params.token,
+          amount: params.amount,
+          timestamp: Date.now(),
+        }
+      };
+    } catch (error: any) {
+      logger.error('AutoTradeIPC', '执行卖出失败', error);
+      errorHandler.handleError(error, ErrorCategory.TRANSACTION, 'Manual Sell');
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  /**
+   * 获取交易历史
+   */
+  ipcMain.handle('autoTrade:getHistory', async (_event, limit: number = 50) => {
+    try {
+      logger.debug('AutoTradeIPC', '获取交易历史');
+
+      const db = getDatabase();
+
+      const history = db.prepare(`
+        SELECT * FROM auto_trade_history
+        ORDER BY timestamp DESC
+        LIMIT ?
+      `).all(limit);
+
+      logger.debug('AutoTradeIPC', `获取交易历史: ${history.length} 条记录`);
+
+      return {
+        success: true,
+        data: history
+      };
+    } catch (error: any) {
+      logger.error('AutoTradeIPC', '获取交易历史失败', error);
+      errorHandler.handleError(error, ErrorCategory.DATABASE, 'Get Trade History');
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  logger.info('AutoTradeIPC', '自动交易IPC处理器注册完成');
+}
+
+/**
+ * 注销自动交易IPC处理器
+ */
+export function unregisterAutoTradeHandlers(): void {
+  const channels = [
+    'autoTrade:enable',
+    'autoTrade:setStrategy',
+    'autoTrade:getStatus',
+    'autoTrade:buy',
+    'autoTrade:sell',
+    'autoTrade:getHistory'
+  ];
+
+  channels.forEach(channel => {
+    ipcMain.removeHandler(channel);
+  });
+
+  logger.info('AutoTradeIPC', '自动交易IPC处理器已注销');
+}
+
+/**
+ * 导出的辅助函数（供内部使用）
  */
 export async function enableTrading(enabled: boolean): Promise<any> {
   autoTradingEnabled = enabled;
 
   // 更新数据库设置
-  const db = require('../data/database').getDatabase();
+  const db = getDatabase();
   db.prepare(`
     INSERT OR REPLACE INTO settings (key, value, updated_at)
     VALUES ('auto_trading_enabled', ?, strftime('%s', 'now'))
@@ -24,9 +310,6 @@ export async function enableTrading(enabled: boolean): Promise<any> {
   };
 }
 
-/**
- * 设置交易策略
- */
 export async function setStrategy(strategy: any): Promise<any> {
   currentStrategy = strategy;
 
@@ -36,9 +319,6 @@ export async function setStrategy(strategy: any): Promise<any> {
   };
 }
 
-/**
- * 获取交易状态
- */
 export async function getTradingStatus(): Promise<any> {
   return {
     enabled: autoTradingEnabled,
@@ -54,5 +334,5 @@ export async function getTradingStatus(): Promise<any> {
  */
 function startAutoTrading() {
   // 这里应该实现自动交易逻辑
-  console.log('Auto trading started with strategy:', currentStrategy);
+  logger.info('AutoTradeIPC', '自动交易已启动', currentStrategy);
 }

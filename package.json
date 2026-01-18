@@ -25,10 +25,11 @@
   "license": "MIT",
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11",
+    "@types/bs58": "^4.0.4",
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.11.16",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
-    "@types/crypto-js": "^4.2.2",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -43,16 +44,16 @@
     "vite-plugin-electron": "^0.28.4"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.2.6",
+    "@solana/web3.js": "^1.91.1",
+    "antd": "^5.13.2",
+    "axios": "^1.6.7",
     "better-sqlite3": "^9.4.3",
+    "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.10",
     "ethers": "^6.10.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@solana/web3.js": "^1.91.1",
-    "axios": "^1.6.7",
-    "crypto-js": "^4.2.0",
-    "antd": "^5.13.2",
-    "@ant-design/icons": "^5.2.6",
-    "dayjs": "^1.11.10"
+    "react-dom": "^18.2.0"
   },
   "build": {
     "appId": "com.mememasterpro.app",

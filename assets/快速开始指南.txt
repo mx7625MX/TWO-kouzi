@@ -1,0 +1,53 @@
+Electron + React + TypeScript + Vite
+一个现代化的 Electron 桌面应用程序模板。
+特性
+⚡️ 
+Vite - 极速的开发体验
+⚛️ 
+React 18 - 最新的 React 版本
+🔷 
+TypeScript - 类型安全的开发
+🖥️ 
+Electron - 跨平台桌面应用
+🎨 
+深色主题 - 现代化的UI设计
+项目结构
+开发
+• 
+• 
+• 
+• 
+• 
+src/
+├── main/          # Electron 主进程
+│   ├── main.ts    # 主进程入口
+│   └── preload.ts # 预加载脚本
+├── renderer/      # React 渲染进程
+│   ├── App.tsx    # 主组件
+│   ├── App.css    # 组件样式
+│   ├── main.tsx   # React 入口
+│   └── index.css  # 全局样式
+└── shared/        # 共享代码
+    ├── types.ts   # 类型定义
+    └── constants.ts # 常量
+# 安装依赖
+npm install
+# 启动开发服务器（仅Web）
+npm run dev
+# 启动 Electron 应用
+npm run electron:dev
+bash
+1/2
+构建
+窗口配置
+窗口大小: 1200 x 800
+主题: 深色主题
+安全特性: 启用 contextIsolation 和 preload
+# 构建应用
+npm run electron:build
+bash
+• 
+• 
+• 
+2/2
+

@@ -1,7 +1,214 @@
+import { ipcMain } from 'electron';
 import { getDatabase } from '../data/database';
+import { logger } from '../utils/logger';
+import { errorHandler, ErrorCategory } from '../utils/errorHandler';
 
 /**
- * 获取市场数据
+ * 注册市场监控IPC处理器
+ */
+export function registerMarketHandlers(): void {
+  logger.info('MarketIPC', '注册市场监控IPC处理器...');
+
+  /**
+   * 获取市场数据
+   */
+  ipcMain.handle('market:getData', async (_event, token: string) => {
+    try {
+      logger.debug('MarketIPC', `获取市场数据: ${token}`);
+
+      if (!token) {
+        throw new Error('代币符号不能为空');
+      }
+
+      // 这里应该调用实际的市场数据API
+      // 目前返回模拟数据
+      const data = {
+        token: token,
+        price: (Math.random() * 1000).toFixed(4),
+        change24h: (Math.random() * 20 - 10).toFixed(2),
+        volume24h: (Math.random() * 1000000).toFixed(0),
+        marketCap: (Math.random() * 100000000).toFixed(0),
+        updatedAt: Date.now(),
+      };
+
+      logger.debug('MarketIPC', `获取市场数据成功: ${token}`);
+
+      return {
+        success: true,
+        data: data
+      };
+    } catch (error: any) {
+      logger.error('MarketIPC', `获取市场数据失败: ${token}`, error);
+      errorHandler.handleError(error, ErrorCategory.NETWORK, 'Get Market Data');
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  /**
+   * 获取监控列表
+   */
+  ipcMain.handle('market:getWatchlist', async () => {
+    try {
+      logger.debug('MarketIPC', '获取监控列表');
+
+      const db = getDatabase();
+
+      const watchlist = db.prepare(`
+        SELECT * FROM market_watchlist
+        ORDER BY added_at DESC
+      `).all();
+
+      logger.debug('MarketIPC', `获取监控列表: ${watchlist.length} 个代币`);
+
+      return {
+        success: true,
+        data: watchlist
+      };
+    } catch (error: any) {
+      logger.error('MarketIPC', '获取监控列表失败', error);
+      errorHandler.handleError(error, ErrorCategory.DATABASE, 'Get Watchlist');
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  /**
+   * 添加到监控列表
+   */
+  ipcMain.handle('market:addToWatchlist', async (_event, token: string) => {
+    try {
+      logger.info('MarketIPC', `添加到监控列表: ${token}`);
+
+      if (!token) {
+        throw new Error('代币地址不能为空');
+      }
+
+      const db = getDatabase();
+
+      const result = db.prepare(`
+        INSERT OR REPLACE INTO market_watchlist (token_address, token_name, token_symbol, chain, added_at)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(token, `Token ${token}`, token.toUpperCase().substring(0, 6), 'BSC', Date.now());
+
+      logger.info('MarketIPC', `代币已添加到监控列表: ${token}`);
+
+      return {
+        success: true,
+        data: {
+          id: result.lastInsertRowid,
+          token: token,
+          message: 'Token added to watchlist',
+        }
+      };
+    } catch (error: any) {
+      logger.error('MarketIPC', `添加到监控列表失败: ${token}`, error);
+      errorHandler.handleError(error, ErrorCategory.DATABASE, 'Add to Watchlist');
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  /**
+   * 从监控列表移除
+   */
+  ipcMain.handle('market:removeFromWatchlist', async (_event, token: string) => {
+    try {
+      logger.info('MarketIPC', `从监控列表移除: ${token}`);
+
+      const db = getDatabase();
+
+      const result = db.prepare('DELETE FROM market_watchlist WHERE token_address = ?').run(token);
+
+      if (result.changes === 0) {
+        throw new Error('代币不在监控列表中');
+      }
+
+      logger.info('MarketIPC', `代币已从监控列表移除: ${token}`);
+
+      return {
+        success: true,
+        message: 'Token removed from watchlist'
+      };
+    } catch (error: any) {
+      logger.error('MarketIPC', `从监控列表移除失败: ${token}`, error);
+      errorHandler.handleError(error, ErrorCategory.DATABASE, 'Remove from Watchlist');
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  /**
+   * 获取市场概览
+   */
+  ipcMain.handle('market:getOverview', async () => {
+    try {
+      logger.debug('MarketIPC', '获取市场概览');
+
+      // 返回模拟的市场概览数据
+      const overview = {
+        totalMarketCap: '2000000000',
+        totalVolume24h: '150000000',
+        topGainers: [
+          { token: 'PEPE', change: '+45.2%' },
+          { token: 'DOGE', change: '+23.8%' },
+          { token: 'SHIB', change: '+18.5%' },
+        ],
+        topLosers: [
+          { token: 'FLOKI', change: '-12.3%' },
+          { token: 'BONK', change: '-8.7%' },
+          { token: 'MEME', change: '-5.2%' },
+        ],
+      };
+
+      logger.debug('MarketIPC', '获取市场概览成功');
+
+      return {
+        success: true,
+        data: overview
+      };
+    } catch (error: any) {
+      logger.error('MarketIPC', '获取市场概览失败', error);
+      errorHandler.handleError(error, ErrorCategory.NETWORK, 'Get Market Overview');
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  logger.info('MarketIPC', '市场监控IPC处理器注册完成');
+}
+
+/**
+ * 注销市场监控IPC处理器
+ */
+export function unregisterMarketHandlers(): void {
+  const channels = [
+    'market:getData',
+    'market:getWatchlist',
+    'market:addToWatchlist',
+    'market:removeFromWatchlist',
+    'market:getOverview'
+  ];
+
+  channels.forEach(channel => {
+    ipcMain.removeHandler(channel);
+  });
+
+  logger.info('MarketIPC', '市场监控IPC处理器已注销');
+}
+
+/**
+ * 导出的辅助函数（供内部使用）
  */
 export async function getMarketData(token: string): Promise<any> {
   // 这里应该调用实际的市场数据API
@@ -16,9 +223,6 @@ export async function getMarketData(token: string): Promise<any> {
   };
 }
 
-/**
- * 获取监控列表
- */
 export async function getWatchlist(): Promise<any[]> {
   const db = getDatabase();
 
@@ -30,9 +234,6 @@ export async function getWatchlist(): Promise<any[]> {
   return watchlist;
 }
 
-/**
- * 添加到监控列表
- */
 export async function addToWatchlist(token: string): Promise<any> {
   const db = getDatabase();
 

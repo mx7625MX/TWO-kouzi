@@ -50,6 +50,7 @@ export class WalletManager {
         const encryptedKey = encrypt(ethersWallet.privateKey, this.password);
 
         wallet = {
+          id: 0, // 临时ID，保存后会更新
           name,
           address: ethersWallet.address,
           chain: network,
@@ -70,6 +71,7 @@ export class WalletManager {
         const encryptedKey = encrypt(privateKey, this.password);
 
         wallet = {
+          id: 0, // 临时ID，保存后会更新
           name,
           address,
           chain: network,
@@ -135,6 +137,7 @@ export class WalletManager {
         const encryptedKey = encrypt(privateKey, this.password);
 
         wallet = {
+          id: 0, // 临时ID，保存后会更新
           name,
           address,
           chain: network,
@@ -161,6 +164,7 @@ export class WalletManager {
         const encryptedKey = encrypt(privateKey, this.password);
 
         wallet = {
+          id: 0, // 临时ID，保存后会更新
           name,
           address,
           chain: network,

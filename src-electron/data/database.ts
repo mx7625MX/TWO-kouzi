@@ -1,6 +1,8 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
+import { logger } from '../utils/logger';
+import { errorHandler, ErrorCategory } from '../utils/errorHandler';
 
 let db: Database.Database | null = null;
 
@@ -11,25 +13,32 @@ const DB_PATH = path.join(process.cwd(), 'meme-master-pro.db');
  */
 export async function initializeDatabase(): Promise<void> {
   if (db) {
+    logger.warn('Database', '数据库已初始化，跳过');
     return;
   }
 
   try {
+    logger.info('Database', '开始初始化数据库...');
+
     // 确保数据目录存在
     const dbDir = path.dirname(DB_PATH);
     if (!fs.existsSync(dbDir)) {
+      logger.debug('Database', `创建数据库目录: ${dbDir}`);
       fs.mkdirSync(dbDir, { recursive: true });
     }
 
     db = new Database(DB_PATH);
     db.pragma('journal_mode = WAL'); // 启用WAL模式以提高性能
 
+    logger.info('Database', 'WAL模式已启用');
+
     // 创建所有表
     createTables();
 
-    console.log('Database initialized successfully');
-  } catch (error) {
-    console.error('Failed to initialize database:', error);
+    logger.info('Database', `数据库初始化成功: ${DB_PATH}`);
+  } catch (error: any) {
+    logger.error('Database', '数据库初始化失败', error);
+    errorHandler.handleError(error, ErrorCategory.DATABASE, 'Initialize Database');
     throw error;
   }
 }
@@ -38,10 +47,16 @@ export async function initializeDatabase(): Promise<void> {
  * 创建数据库表
  */
 function createTables(): void {
-  if (!db) return;
+  if (!db) {
+    logger.error('Database', '数据库实例为空，无法创建表');
+    return;
+  }
 
-  // 钱包表
-  db.exec(`
+  logger.debug('Database', '开始创建数据库表...');
+
+  try {
+    // 钱包表
+    db.exec(`
     CREATE TABLE IF NOT EXISTS wallets (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -173,6 +188,12 @@ function createTables(): void {
   });
 
   insertMany(defaultSettings);
+
+    logger.info('Database', '所有数据库表创建完成');
+  } catch (error: any) {
+    logger.error('Database', '创建数据库表失败', error);
+    throw error;
+  }
 }
 
 /**
@@ -180,7 +201,10 @@ function createTables(): void {
  */
 export function getDatabase(): Database.Database {
   if (!db) {
-    throw new Error('Database not initialized. Call initializeDatabase() first.');
+    const error = new Error('Database not initialized. Call initializeDatabase() first.');
+    logger.error('Database', '获取数据库实例失败：数据库未初始化');
+    errorHandler.handleError(error, ErrorCategory.DATABASE, 'Get Database Instance');
+    throw error;
   }
   return db;
 }
@@ -190,8 +214,13 @@ export function getDatabase(): Database.Database {
  */
 export function closeDatabase(): void {
   if (db) {
-    db.close();
-    db = null;
-    console.log('Database closed');
+    try {
+      db.close();
+      db = null;
+      logger.info('Database', '数据库连接已关闭');
+    } catch (error: any) {
+      logger.error('Database', '关闭数据库连接失败', error);
+      errorHandler.handleError(error, ErrorCategory.DATABASE, 'Close Database');
+    }
   }
 }
