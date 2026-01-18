@@ -1,45 +1,108 @@
 import React from 'react';
+import { Layout, Menu, theme } from 'antd';
+import type { MenuProps } from 'antd';
+import {
+  WalletOutlined,
+  RocketOutlined,
+  SafetyOutlined,
+  RobotOutlined,
+  LineChartOutlined,
+  AlertOutlined,
+  BarChartOutlined,
+  FireOutlined,
+  DollarOutlined,
+  ThunderboltOutlined,
+  HistoryOutlined,
+  DatabaseOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
+
+const { Sider } = Layout;
 
 interface SidebarProps {
   currentPage: string;
   onSelectPage: (page: string) => void;
 }
 
-const menuItems = [
-  { id: 'wallet', label: '钱包管理', icon: '💼' },
-  { id: 'launch', label: '代币发行', icon: '🚀' },
-  { id: 'mev', label: 'MEV防护', icon: '🛡️' },
-  { id: 'ai', label: 'AI情绪分析', icon: '🤖' },
-  { id: 'trade', label: '自动交易', icon: '📈' },
-  { id: 'risk', label: '风险预警', icon: '⚠️' },
-  { id: 'market', label: '市场监控', icon: '📊' },
-  { id: 'hotspot', label: '热点监控', icon: '🔥' },
-  { id: 'profit', label: '盈利分析', icon: '💰' },
-  { id: 'flash', label: '快速卖出', icon: '⚡' },
-  { id: 'history', label: '交易历史', icon: '📝' },
-  { id: 'data', label: '数据管理', icon: '💾' },
-  { id: 'settings', label: '设置', icon: '⚙️' },
+type MenuItem = Required<MenuProps>['items'][number];
+
+function getItem(
+  label: React.ReactNode,
+  key: React.Key,
+  icon?: React.ReactNode,
+): MenuItem {
+  return {
+    key,
+    icon,
+    label,
+  } as MenuItem;
+}
+
+const menuItems: MenuItem[] = [
+  getItem('钱包管理', 'wallet', <WalletOutlined />),
+  getItem('代币发行', 'launch', <RocketOutlined />),
+  getItem('MEV防护', 'mev', <SafetyOutlined />),
+  getItem('AI情绪分析', 'ai', <RobotOutlined />),
+  getItem('自动交易', 'trade', <LineChartOutlined />),
+  getItem('风险预警', 'risk', <AlertOutlined />),
+  getItem('市场监控', 'market', <BarChartOutlined />),
+  getItem('热点监控', 'hotspot', <FireOutlined />),
+  getItem('盈利分析', 'profit', <DollarOutlined />),
+  getItem('快速卖出', 'flash', <ThunderboltOutlined />),
+  getItem('交易历史', 'history', <HistoryOutlined />),
+  getItem('数据管理', 'data', <DatabaseOutlined />),
+  getItem('设置', 'settings', <SettingOutlined />),
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ currentPage, onSelectPage }) => {
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
+
+  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
+    onSelectPage(key);
+  };
+
   return (
-    <div className="sidebar">
-      <div className="sidebar-header">
-        <h1>Meme Master Pro</h1>
+    <Sider
+      width={240}
+      style={{
+        overflow: 'auto',
+        height: '100vh',
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        background: colorBgContainer,
+      }}
+    >
+      <div style={{
+        height: 64,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderBottom: '1px solid rgba(255,255,255,0.1)',
+      }}>
+        <h2 style={{
+          margin: 0,
+          fontSize: 20,
+          fontWeight: 600,
+          background: 'linear-gradient(90deg, #00d4ff, #7b2cbf)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}>
+          Meme Master Pro
+        </h2>
       </div>
-      <nav className="sidebar-menu">
-        {menuItems.map((item) => (
-          <div
-            key={item.id}
-            className={`sidebar-item ${currentPage === item.id ? 'active' : ''}`}
-            onClick={() => onSelectPage(item.id)}
-          >
-            <span>{item.icon}</span>
-            <span>{item.label}</span>
-          </div>
-        ))}
-      </nav>
-    </div>
+      <Menu
+        mode="inline"
+        selectedKeys={[currentPage]}
+        items={menuItems}
+        onClick={handleMenuClick}
+        style={{ borderRight: 0 }}
+      />
+    </Sider>
   );
 };
 

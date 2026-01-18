@@ -1,0 +1,83 @@
+{
+  "name": "electron-react-vite-app",
+  "version": "1.0.0",
+  "description": "Electron + React + TypeScript + Vite Application",
+  "main": "dist-electron/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && electron-builder",
+    "preview": "vite preview",
+    "electron:dev": "concurrently \"vite\" \"wait-on tcp:5173 && electron .\"",
+    "electron:build": "tsc && vite build && electron-builder",
+    "test": "npx tsx src/tests/quick-test.ts",
+    "test:full": "npx tsx src/tests/wallet-manager.test.ts"
+  },
+  "keywords": [
+    "electron",
+    "react",
+    "typescript",
+    "vite"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/bip39": "^2.4.2",
+    "@types/crypto-js": "^4.2.2",
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.2",
+    "electron": "^28.1.4",
+    "electron-builder": "^24.9.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vite-plugin-electron": "^0.28.2",
+    "vite-plugin-electron-renderer": "^0.14.5",
+    "wait-on": "^7.2.0"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.1.0",
+    "@scure/bip32": "^2.0.1",
+    "@scure/bip39": "^2.0.1",
+    "@solana/web3.js": "^1.98.4",
+    "antd": "^6.2.0",
+    "better-sqlite3": "^12.6.2",
+    "bip39": "^3.1.0",
+    "crypto-js": "^4.2.0",
+    "ethers": "^6.16.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "uuid": "^13.0.0"
+  },
+  "build": {
+    "appId": "com.mememaster.pro",
+    "productName": "Meme Master Pro",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "asar": true,
+    "asarUnpack": [
+      "**/node_modules/better-sqlite3/**/*",
+      "**/node_modules/@solana/**/*"
+    ],
+    "copyright": "Copyright © 2025",
+    "electronVersion": "28.1.4"
+  }
+}

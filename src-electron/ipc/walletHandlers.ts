@@ -1,169 +1,189 @@
-import { getDatabase } from '../data/database';
-import { Wallet } from 'ethers';
-import * as bs58 from 'bs58';
+import { ipcMain } from 'electron';
+import { WalletManager } from '../utils/walletManager';
+import { logger } from '../utils/logger';
+import { errorHandler, ErrorCategory } from '../utils/errorHandler';
+import { validatePasswordStrength } from '../utils/cryptoUtils';
+
+// 全局钱包管理器实例
+let walletManager: WalletManager | null = null;
 
 /**
- * 创建钱包（从助记词）
+ * 注册钱包相关IPC处理器
  */
-export async function createWallet(mnemonic: string): Promise<any> {
-  const db = getDatabase();
-
-  // 从助记词创建钱包
-  const wallet = Wallet.fromPhrase(mnemonic);
-
-  const result = db.prepare(`
-    INSERT INTO wallets (name, private_key, address, chain)
-    VALUES (?, ?, ?, ?)
-  `).run(
-    `Wallet ${wallet.address.substring(0, 8)}`,
-    wallet.privateKey,
-    wallet.address,
-    'BSC'
-  );
-
-  return {
-    id: result.lastInsertRowid,
-    name: `Wallet ${wallet.address.substring(0, 8)}`,
-    address: wallet.address,
-    chain: 'BSC',
-    createdAt: Date.now(),
-  };
-}
-
-/**
- * 导入钱包（从私钥）
- */
-export async function importWallet(privateKey: string): Promise<any> {
-  const db = getDatabase();
-
-  let address: string;
-  let chain = 'BSC';
-
-  // 尝试判断是EVM还是Solana钱包
-  if (privateKey.length === 64 || privateKey.startsWith('0x')) {
-    // EVM钱包
-    const wallet = new Wallet(privateKey);
-    address = wallet.address;
-  } else {
-    // Solana钱包（这里简化处理，实际需要使用@solana/web3.js）
+export function registerWalletHandlers() {
+  // 初始化钱包管理器
+  ipcMain.handle('wallet:init', async (_event, password: string) => {
     try {
-      const decoded = bs58.decode(privateKey);
-      if (decoded.length === 64) {
-        // Solana私钥
-        chain = 'Solana';
-        address = privateKey.substring(0, 8); // 简化处理
-      } else {
-        throw new Error('Invalid private key format');
+      logger.info('WalletIPC', '初始化钱包管理器');
+
+      // 验证密码强度
+      const strength = validatePasswordStrength(password);
+      if (strength.score < 2) {
+        throw new Error(`密码强度不足：${strength.description}`);
       }
-    } catch {
-      // 回退到EVM
-      const wallet = new Wallet(privateKey);
-      address = wallet.address;
+
+      walletManager = new WalletManager(password);
+      logger.info('WalletIPC', '钱包管理器初始化成功');
+      return { success: true };
+    } catch (error: any) {
+      logger.error('WalletIPC', '初始化钱包管理器失败', error);
+      errorHandler.handleError(error, ErrorCategory.WALLET, 'Init Wallet Manager');
+      return { success: false, error: error.message };
     }
-  }
+  });
 
-  // 检查钱包是否已存在
-  const existing = db.prepare(
-    'SELECT id FROM wallets WHERE private_key = ?'
-  ).get(privateKey);
+  // 创建钱包
+  ipcMain.handle('wallet:create', async (_event, name: string, network: string) => {
+    try {
+      if (!walletManager) {
+        throw new Error('钱包管理器未初始化，请先设置密码');
+      }
 
-  if (existing) {
-    throw new Error('Wallet already exists');
-  }
+      logger.info('WalletIPC', `创建${network}钱包: ${name}`);
+      const wallet = await walletManager.createWallet(name, network as 'BSC' | 'Solana');
 
-  const result = db.prepare(`
-    INSERT INTO wallets (name, private_key, address, chain)
-    VALUES (?, ?, ?, ?)
-  `).run(
-    `Wallet ${address.substring(0, 8)}`,
-    privateKey,
-    address,
-    chain
-  );
+      // 返回钱包信息（不包含私钥）
+      const { private_key, ...walletInfo } = wallet;
+      return { success: true, data: walletInfo };
+    } catch (error: any) {
+      logger.error('WalletIPC', '创建钱包失败', error);
+      errorHandler.handleError(error, ErrorCategory.WALLET, 'Create Wallet');
+      return { success: false, error: error.message };
+    }
+  });
 
-  return {
-    id: result.lastInsertRowid,
-    name: `Wallet ${address.substring(0, 8)}`,
-    address: address,
-    chain: chain,
-    createdAt: Date.now(),
-  };
+  // 导入钱包
+  ipcMain.handle('wallet:import', async (_event, name: string, network: string, privateKey: string, type: string) => {
+    try {
+      if (!walletManager) {
+        throw new Error('钱包管理器未初始化，请先设置密码');
+      }
+
+      logger.info('WalletIPC', `导入${network}钱包: ${name}`);
+      const wallet = await walletManager.importWallet(
+        name,
+        network as 'BSC' | 'Solana',
+        privateKey,
+        type as 'privateKey' | 'mnemonic'
+      );
+
+      // 返回钱包信息（不包含私钥）
+      const { private_key, ...walletInfo } = wallet;
+      return { success: true, data: walletInfo };
+    } catch (error: any) {
+      logger.error('WalletIPC', '导入钱包失败', error);
+      errorHandler.handleError(error, ErrorCategory.WALLET, 'Import Wallet');
+      return { success: false, error: error.message };
+    }
+  });
+
+  // 获取所有钱包
+  ipcMain.handle('wallet:getAll', async () => {
+    try {
+      if (!walletManager) {
+        throw new Error('钱包管理器未初始化');
+      }
+
+      logger.debug('WalletIPC', '获取钱包列表');
+      const wallets = await walletManager.getWallets();
+      return { success: true, data: wallets };
+    } catch (error: any) {
+      logger.error('WalletIPC', '获取钱包列表失败', error);
+      errorHandler.handleError(error, ErrorCategory.WALLET, 'Get Wallets');
+      return { success: false, error: error.message };
+    }
+  });
+
+  // 获取钱包余额
+  ipcMain.handle('wallet:getBalance', async (_event, walletId: number) => {
+    try {
+      if (!walletManager) {
+        throw new Error('钱包管理器未初始化');
+      }
+
+      logger.debug('WalletIPC', `获取钱包余额: ID ${walletId}`);
+      const balance = await walletManager.getBalance(walletId);
+      return { success: true, data: balance };
+    } catch (error: any) {
+      logger.error('WalletIPC', '获取钱包余额失败', error);
+      errorHandler.handleError(error, ErrorCategory.WALLET, 'Get Balance');
+      return { success: false, error: error.message };
+    }
+  });
+
+  // 签名交易
+  ipcMain.handle('wallet:signTransaction', async (_event, walletId: number, txData: any) => {
+    try {
+      if (!walletManager) {
+        throw new Error('钱包管理器未初始化');
+      }
+
+      logger.info('WalletIPC', `签名交易: 钱包ID ${walletId}`);
+      const result = await walletManager.signTransaction(walletId, txData);
+      return { success: true, data: result };
+    } catch (error: any) {
+      logger.error('WalletIPC', '签名交易失败', error);
+      errorHandler.handleError(error, ErrorCategory.WALLET, 'Sign Transaction');
+      return { success: false, error: error.message };
+    }
+  });
+
+  // 删除钱包
+  ipcMain.handle('wallet:delete', async (_event, walletId: number) => {
+    try {
+      if (!walletManager) {
+        throw new Error('钱包管理器未初始化');
+      }
+
+      logger.info('WalletIPC', `删除钱包: ID ${walletId}`);
+      await walletManager.deleteWallet(walletId);
+      return { success: true };
+    } catch (error: any) {
+      logger.error('WalletIPC', '删除钱包失败', error);
+      errorHandler.handleError(error, ErrorCategory.WALLET, 'Delete Wallet');
+      return { success: false, error: error.message };
+    }
+  });
+
+  // 更改钱包密码
+  ipcMain.handle('wallet:changePassword', async (_event, walletId: number, newPassword: string) => {
+    try {
+      if (!walletManager) {
+        throw new Error('钱包管理器未初始化');
+      }
+
+      logger.info('WalletIPC', `更改钱包密码: ID ${walletId}`);
+      await walletManager.changeWalletPassword(walletId, newPassword);
+      return { success: true };
+    } catch (error: any) {
+      logger.error('WalletIPC', '更改钱包密码失败', error);
+      errorHandler.handleError(error, ErrorCategory.WALLET, 'Change Password');
+      return { success: false, error: error.message };
+    }
+  });
+
+  logger.info('WalletIPC', '钱包IPC处理器已注册');
 }
 
 /**
- * 获取所有钱包
+ * 注销钱包相关IPC处理器
  */
-export async function getWallets(): Promise<any[]> {
-  const db = getDatabase();
+export function unregisterWalletHandlers() {
+  const channels = [
+    'wallet:init',
+    'wallet:create',
+    'wallet:import',
+    'wallet:getAll',
+    'wallet:getBalance',
+    'wallet:signTransaction',
+    'wallet:delete',
+    'wallet:changePassword'
+  ];
 
-  const wallets = db.prepare(`
-    SELECT id, name, address, chain, created_at
-    FROM wallets
-    ORDER BY created_at DESC
-  `).all();
+  channels.forEach(channel => {
+    ipcMain.removeHandler(channel);
+  });
 
-  return wallets;
-}
-
-/**
- * 获取钱包余额
- */
-export async function getBalance(walletId: string, chain: string): Promise<any> {
-  const db = getDatabase();
-
-  const wallet = db.prepare(
-    'SELECT * FROM wallets WHERE id = ? AND chain = ?'
-  ).get(walletId);
-
-  if (!wallet) {
-    throw new Error('Wallet not found');
-  }
-
-  // 这里应该调用实际的区块链API获取余额
-  // 目前返回模拟数据
-  return {
-    walletId: walletId,
-    chain: chain,
-    balance: '0.5', // ETH/SOL
-    usdValue: '1500',
-    updatedAt: Date.now(),
-  };
-}
-
-/**
- * 签名交易
- */
-export async function signTransaction(
-  walletId: string,
-  chain: string,
-  txData: any
-): Promise<any> {
-  const db = getDatabase();
-
-  const wallet = db.prepare(
-    'SELECT * FROM wallets WHERE id = ? AND chain = ?'
-  ).get(walletId);
-
-  if (!wallet) {
-    throw new Error('Wallet not found');
-  }
-
-  // 这里应该使用实际的区块链SDK签名交易
-  // 目前返回模拟签名
-  return {
-    signed: true,
-    txHash: `0x${Math.random().toString(16).substring(2, 66)}`,
-    message: 'Transaction signed successfully',
-  };
-}
-
-/**
- * 删除钱包
- */
-export async function deleteWallet(walletId: string): Promise<void> {
-  const db = getDatabase();
-
-  db.prepare('DELETE FROM wallets WHERE id = ?').run(walletId);
-
-  console.log(`Wallet ${walletId} deleted`);
+  walletManager = null;
+  logger.info('WalletIPC', '钱包IPC处理器已注销');
 }

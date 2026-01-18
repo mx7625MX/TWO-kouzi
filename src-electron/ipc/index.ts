@@ -1,7 +1,7 @@
-import { registerIpcHandler } from '../utils/ipc-cleanup';
+import { logger } from '../utils/logger';
 
-// 导入各个模块的IPC处理器
-import * as walletHandlers from './walletHandlers';
+// 导入各个模块的IPC处理器注册/注销函数
+import { registerWalletHandlers, unregisterWalletHandlers } from './walletHandlers';
 import * as launchHandlers from './launchHandlers';
 import * as mevProtectionHandlers from './mevProtectionHandlers';
 import * as aiSentimentHandlers from './aiSentimentHandlers';
@@ -19,71 +19,85 @@ import * as settingsHandlers from './settingsHandlers';
  * 注册所有IPC处理器
  */
 export function registerAllIpcHandlers() {
-  console.log('Registering all IPC handlers...');
+  logger.info('IPC', '开始注册所有IPC处理器...');
 
-  // 钱包管理
-  registerIpcHandler('wallet:create', walletHandlers.createWallet);
-  registerIpcHandler('wallet:import', walletHandlers.importWallet);
-  registerIpcHandler('wallet:getAll', walletHandlers.getWallets);
-  registerIpcHandler('wallet:getBalance', walletHandlers.getBalance);
-  registerIpcHandler('wallet:sign', walletHandlers.signTransaction);
-  registerIpcHandler('wallet:delete', walletHandlers.deleteWallet);
+  // 钱包管理（使用新的加密钱包管理器）
+  registerWalletHandlers();
 
   // 代币发行
-  registerIpcHandler('launch:token', launchHandlers.launchToken);
-  registerIpcHandler('launch:bundleBuy', launchHandlers.bundleBuy);
-  registerIpcHandler('launch:getTasks', launchHandlers.getLaunchTasks);
-  registerIpcHandler('launch:cancelTask', launchHandlers.cancelTask);
+  if (launchHandlers.registerLaunchHandlers) {
+    launchHandlers.registerLaunchHandlers();
+  }
 
   // MEV防护
-  registerIpcHandler('mev:enable', mevProtectionHandlers.enableProtection);
-  registerIpcHandler('mev:getStatus', mevProtectionHandlers.getProtectionStatus);
-  registerIpcHandler('mev:getStats', mevProtectionHandlers.getAttackStats);
+  if (mevProtectionHandlers.registerMEVHandlers) {
+    mevProtectionHandlers.registerMEVHandlers();
+  }
 
   // AI情绪分析
-  registerIpcHandler('ai:analyze', aiSentimentHandlers.analyzeSentiment);
-  registerIpcHandler('ai:getSentimentData', aiSentimentHandlers.getSentimentData);
+  if (aiSentimentHandlers.registerAISentimentHandlers) {
+    aiSentimentHandlers.registerAISentimentHandlers();
+  }
 
   // 自动交易
-  registerIpcHandler('trade:enable', autoTradeHandlers.enableTrading);
-  registerIpcHandler('trade:setStrategy', autoTradeHandlers.setStrategy);
-  registerIpcHandler('trade:getStatus', autoTradeHandlers.getTradingStatus);
+  if (autoTradeHandlers.registerAutoTradeHandlers) {
+    autoTradeHandlers.registerAutoTradeHandlers();
+  }
 
   // 风险预警
-  registerIpcHandler('risk:getAlerts', riskAlertHandlers.getAlerts);
-  registerIpcHandler('risk:setRule', riskAlertHandlers.setAlertRule);
-  registerIpcHandler('risk:clearAlert', riskAlertHandlers.clearAlert);
+  if (riskAlertHandlers.registerRiskAlertHandlers) {
+    riskAlertHandlers.registerRiskAlertHandlers();
+  }
 
   // 市场监控
-  registerIpcHandler('market:getData', marketHandlers.getMarketData);
-  registerIpcHandler('market:getWatchlist', marketHandlers.getWatchlist);
-  registerIpcHandler('market:addToWatchlist', marketHandlers.addToWatchlist);
+  if (marketHandlers.registerMarketHandlers) {
+    marketHandlers.registerMarketHandlers();
+  }
 
   // 热点监控
-  registerIpcHandler('hotspot:getHotTokens', hotspotHandlers.getHotTokens);
-  registerIpcHandler('hotspot:getTrending', hotspotHandlers.getTrendingData);
+  if (hotspotHandlers.registerHotspotHandlers) {
+    hotspotHandlers.registerHotspotHandlers();
+  }
 
   // 盈利分析
-  registerIpcHandler('profit:getReport', profitHandlers.getProfitReport);
-  registerIpcHandler('profit:getROI', profitHandlers.getROIStats);
+  if (profitHandlers.registerProfitHandlers) {
+    profitHandlers.registerProfitHandlers();
+  }
 
   // 快速卖出
-  registerIpcHandler('flashSell:execute', flashSellHandlers.executeQuickSell);
-  registerIpcHandler('flashSell:getSettings', flashSellHandlers.getSellSettings);
+  if (flashSellHandlers.registerFlashSellHandlers) {
+    flashSellHandlers.registerFlashSellHandlers();
+  }
 
   // 交易历史
-  registerIpcHandler('history:getTransactions', historyHandlers.getTransactions);
-  registerIpcHandler('history:export', historyHandlers.exportTransactions);
+  if (historyHandlers.registerHistoryHandlers) {
+    historyHandlers.registerHistoryHandlers();
+  }
 
   // 数据管理
-  registerIpcHandler('data:export', dataExportHandlers.exportData);
-  registerIpcHandler('data:import', dataExportHandlers.importData);
-  registerIpcHandler('data:clear', dataExportHandlers.clearData);
+  if (dataExportHandlers.registerDataExportHandlers) {
+    dataExportHandlers.registerDataExportHandlers();
+  }
 
   // 设置
-  registerIpcHandler('settings:get', settingsHandlers.getSettings);
-  registerIpcHandler('settings:update', settingsHandlers.updateSettings);
-  registerIpcHandler('settings:reset', settingsHandlers.resetSettings);
+  if (settingsHandlers.registerSettingsHandlers) {
+    settingsHandlers.registerSettingsHandlers();
+  }
 
-  console.log('All IPC handlers registered successfully');
+  logger.info('IPC', '所有IPC处理器已注册');
+}
+
+/**
+ * 注销所有IPC处理器
+ */
+export function unregisterAllIpcHandlers() {
+  logger.info('IPC', '开始注销所有IPC处理器...');
+
+  // 钱包管理
+  unregisterWalletHandlers();
+
+  // 其他模块的注销
+  // TODO: 为其他模块添加注销函数
+
+  logger.info('IPC', '所有IPC处理器已注销');
 }

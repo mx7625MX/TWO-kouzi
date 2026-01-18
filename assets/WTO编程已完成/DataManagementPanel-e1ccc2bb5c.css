@@ -1,0 +1,468 @@
+/**
+ * 数据管理面板样式
+ */
+
+.data-management-panel {
+  padding: 24px;
+  background: var(--background-color, #f8fafc);
+  min-height: 100vh;
+  color: var(--text-color, #1e293b);
+}
+
+/* 面板头部 */
+.data-management-panel .panel-header {
+  margin-bottom: 32px;
+}
+
+.data-management-panel .panel-header .ant-typography {
+  margin-bottom: 0;
+}
+
+/* 数据导出卡片 */
+.data-management-panel .data-export-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--surface-color, #ffffff);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  height: 100%;
+}
+
+.data-management-panel .data-export-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  border-color: #667eea;
+}
+
+.data-management-panel .card-icon {
+  font-size: 48px;
+  color: #667eea;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.data-management-panel .data-export-card .ant-typography {
+  margin-bottom: 8px;
+}
+
+.data-management-panel .data-export-card .ant-btn {
+  width: 100%;
+  margin-top: 12px;
+  height: 40px;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+/* 备份卡片 */
+.data-management-panel .backup-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--surface-color, #ffffff);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  height: 100%;
+}
+
+.data-management-panel .backup-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  border-color: #52c41a;
+}
+
+/* 数据面板内容 */
+.data-management-panel .data-panel-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.data-management-panel .data-panel-content .ant-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--surface-color, #ffffff);
+}
+
+.data-management-panel .data-panel-content .ant-alert {
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+/* Tab 样式 */
+.data-management-panel .data-tabs .ant-tabs-nav {
+  margin-bottom: 24px;
+}
+
+.data-management-panel .data-tabs .ant-tabs-tab {
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 8px;
+  margin-right: 8px;
+  transition: all 0.3s ease;
+}
+
+.data-management-panel .data-tabs .ant-tabs-tab:hover {
+  color: #667eea;
+}
+
+.data-management-panel .data-tabs .ant-tabs-tab-active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border: none;
+}
+
+.data-management-panel .data-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #ffffff;
+}
+
+.data-management-panel .data-tabs .ant-tabs-ink-bar {
+  display: none;
+}
+
+/* 按钮 */
+.data-management-panel .ant-btn {
+  border-radius: 8px;
+  height: 40px;
+  padding: 0 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--surface-color, #ffffff);
+  color: var(--text-color, #1e293b);
+}
+
+.data-management-panel .ant-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.data-management-panel .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: #ffffff;
+}
+
+.data-management-panel .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  color: #ffffff;
+  border: none;
+}
+
+.data-management-panel .ant-btn-danger {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+.data-management-panel .ant-btn-danger:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  color: #ffffff;
+}
+
+/* 模态框 */
+.data-management-panel .ant-modal {
+  border-radius: 12px;
+}
+
+.data-management-panel .ant-modal-header {
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  padding: 20px 24px;
+  background: var(--surface-color, #ffffff);
+  border-radius: 12px 12px 0 0;
+}
+
+.data-management-panel .ant-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color, #1e293b);
+}
+
+.data-management-panel .ant-modal-body {
+  padding: 24px;
+  background: var(--surface-color, #ffffff);
+}
+
+.data-management-panel .ant-modal-footer {
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  padding: 16px 24px;
+  background: var(--surface-color, #ffffff);
+  border-radius: 0 0 12px 12px;
+}
+
+/* 表单 */
+.data-management-panel .ant-form-item-label > label {
+  font-weight: 500;
+  color: var(--text-color, #1e293b);
+}
+
+.data-management-panel .ant-input,
+.data-management-panel .ant-select-selector {
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--surface-color, #ffffff);
+  color: var(--text-color, #1e293b);
+  transition: all 0.3s ease;
+}
+
+.data-management-panel .ant-input:focus,
+.data-management-panel .ant-select-focused .ant-select-selector {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.data-management-panel .ant-checkbox-wrapper {
+  color: var(--text-color, #1e293b);
+  font-weight: 500;
+}
+
+/* 警告框 */
+.data-management-panel .ant-alert {
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.data-management-panel .ant-alert-message {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.data-management-panel .ant-alert-description {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* 标题和段落 */
+.data-management-panel .ant-typography h1,
+.data-management-panel .ant-typography h2,
+.data-management-panel .ant-typography h3,
+.data-management-panel .ant-typography h4,
+.data-management-panel .ant-typography h5 {
+  color: var(--text-color, #1e293b);
+  font-weight: 600;
+}
+
+.data-management-panel .ant-typography p {
+  color: var(--text-color, #1e293b);
+  line-height: 1.8;
+}
+
+.data-management-panel .ant-typography-secondary {
+  color: var(--text-secondary-color, #64748b) !important;
+}
+
+/* 分割线 */
+.data-management-panel .ant-divider {
+  border-color: var(--border-color, #e2e8f0);
+}
+
+.data-management-panel .ant-divider-horizontal.ant-divider-with-text {
+  font-weight: 600;
+  color: var(--text-color, #1e293b);
+}
+
+/* 列表 */
+.data-management-panel .ant-typography ul {
+  padding-left: 20px;
+}
+
+.data-management-panel .ant-typography li {
+  margin-bottom: 8px;
+  color: var(--text-color, #1e293b);
+}
+
+.data-management-panel .ant-typography ol {
+  padding-left: 20px;
+}
+
+/* 代码 */
+.data-management-panel code {
+  background: var(--hover-color, #f1f5f9);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #ef4444;
+  font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+}
+
+/* 深色主题适配 */
+[data-theme="dark"] .data-management-panel {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .data-management-panel .data-export-card,
+[data-theme="dark"] .data-management-panel .backup-card,
+[data-theme="dark"] .data-management-panel .data-panel-content .ant-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .data-management-panel .data-export-card:hover,
+[data-theme="dark"] .data-management-panel .backup-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .data-management-panel .ant-typography h1,
+[data-theme="dark"] .data-management-panel .ant-typography h2,
+[data-theme="dark"] .data-management-panel .ant-typography h3,
+[data-theme="dark"] .data-management-panel .ant-typography h4,
+[data-theme="dark"] .data-management-panel .ant-typography h5,
+[data-theme="dark"] .data-management-panel .ant-typography p,
+[data-theme="dark"] .data-management-panel .ant-typography li {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .data-management-panel .ant-typography-secondary {
+  color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .data-management-panel .ant-btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .data-management-panel .ant-input,
+[data-theme="dark"] .data-management-panel .ant-select-selector {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .data-management-panel .ant-checkbox-wrapper {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .data-management-panel .ant-modal {
+  background: #1e293b;
+}
+
+[data-theme="dark"] .data-management-panel .ant-modal-header,
+[data-theme="dark"] .data-management-panel .ant-modal-body,
+[data-theme="dark"] .data-management-panel .ant-modal-footer {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .data-management-panel .ant-modal-title {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .data-management-panel .ant-form-item-label > label {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .data-management-panel .ant-divider {
+  border-color: #334155;
+}
+
+[data-theme="dark"] .data-management-panel .ant-divider-horizontal.ant-divider-with-text {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .data-management-panel code {
+  background: #334155;
+  color: #f87171;
+}
+
+[data-theme="dark"] .data-management-panel .ant-select-dropdown {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .data-management-panel .ant-select-item {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .data-management-panel .ant-select-item-option-selected {
+  background: #334155;
+  color: #f8fafc;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .data-management-panel {
+    padding: 16px;
+  }
+
+  .data-management-panel .panel-header {
+    margin-bottom: 24px;
+  }
+
+  .data-management-panel .data-tabs .ant-tabs-tab {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  .data-management-panel .ant-btn {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .data-management-panel .data-export-card,
+  .data-management-panel .backup-card {
+    margin-bottom: 16px;
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.data-management-panel .data-panel-content > div {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* 加载动画 */
+.data-management-panel .ant-spin-dot-item {
+  background-color: #667eea;
+}
+
+/* 滚动条样式 */
+.data-management-panel ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.data-management-panel ::-webkit-scrollbar-track {
+  background: var(--background-color, #f8fafc);
+  border-radius: 4px;
+}
+
+.data-management-panel ::-webkit-scrollbar-thumb {
+  background: var(--border-color, #e2e8f0);
+  border-radius: 4px;
+}
+
+.data-management-panel ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary-color, #64748b);
+}
+
+[data-theme="dark"] .data-management-panel ::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+[data-theme="dark"] .data-management-panel ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+[data-theme="dark"] .data-management-panel ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}

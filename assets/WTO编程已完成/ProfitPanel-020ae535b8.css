@@ -1,0 +1,559 @@
+/* 收益统计与分析面板样式 */
+
+.profit-panel {
+  padding: 20px;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  min-height: 100vh;
+  color: #fff;
+}
+
+/* 头部 */
+.profit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.profit-header h2 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.time-range-selector {
+  display: flex;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 5px;
+}
+
+.time-range-selector button {
+  padding: 8px 20px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.time-range-selector button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.time-range-selector button.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 标签页 */
+.profit-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  padding: 5px;
+}
+
+.profit-tabs button {
+  flex: 1;
+  padding: 12px 20px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.profit-tabs button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.profit-tabs button.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 加载状态 */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading p {
+  margin-top: 20px;
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+/* 概览区域 */
+.overview-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 汇总卡片 */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.summary-card.profit {
+  background: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+.summary-card.loss {
+  background: rgba(248, 113, 113, 0.1);
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+.card-label {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.card-value {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.card-percentage {
+  font-size: 16px;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.summary-card.profit .card-percentage {
+  color: #4ade80;
+}
+
+.summary-card.loss .card-percentage {
+  color: #f87171;
+}
+
+/* 交易统计 */
+.trade-stats {
+  margin-top: 30px;
+}
+
+.trade-stats h3 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.stat-item {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-label {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.stat-value.win {
+  color: #4ade80;
+}
+
+.stat-value.lose {
+  color: #f87171;
+}
+
+/* 收益记录区域 */
+.records-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.records-section h3 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.no-data p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.record-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.record-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.record-card.profit {
+  border-left: 4px solid #4ade80;
+}
+
+.record-card.loss {
+  border-left: 4px solid #f87171;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.record-token {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.token-symbol {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.token-network {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.token-network.bsc {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.token-network.solana {
+  background: rgba(139, 92, 246, 0.2);
+  color: #8b5cf6;
+}
+
+.record-profit {
+  text-align: right;
+}
+
+.profit-value {
+  font-size: 20px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.profit-percentage {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.record-card.profit .profit-value,
+.record-card.profit .profit-percentage {
+  color: #4ade80;
+}
+
+.record-card.loss .profit-value,
+.record-card.loss .profit-percentage {
+  color: #f87171;
+}
+
+.record-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detail-item .label {
+  font-size: 12px;
+  opacity: 0.7;
+  font-weight: 600;
+}
+
+.detail-item .value {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.record-actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.record-actions button {
+  padding: 6px 12px;
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.record-actions button:hover {
+  background: rgba(248, 113, 113, 0.3);
+}
+
+/* 排行榜区域 */
+.rankings-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.rankings-section h3 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.rankings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ranking-card {
+  display: flex;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  align-items: center;
+}
+
+.ranking-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.ranking-position {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.ranking-info {
+  flex: 1;
+}
+
+.ranking-token {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.token-address {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ranking-stats {
+  display: flex;
+  gap: 15px;
+}
+
+.ranking-stats .stat {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.ranking-profit {
+  text-align: right;
+}
+
+.ranking-profit .profit-value {
+  font-size: 18px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.ranking-profit .profit-percentage {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ranking-profit .profit-value,
+.ranking-profit .profit-percentage {
+  color: #4ade80;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .profit-panel {
+    padding: 15px;
+  }
+
+  .profit-header h2 {
+    font-size: 24px;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .record-details {
+    grid-template-columns: 1fr;
+  }
+
+  .record-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .record-profit {
+    text-align: left;
+  }
+
+  .ranking-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .ranking-stats {
+    justify-content: center;
+  }
+
+  .ranking-profit {
+    text-align: center;
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.record-card,
+.ranking-card,
+.summary-card {
+  animation: fadeIn 0.3s ease-out;
+}

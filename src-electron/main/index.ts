@@ -1,8 +1,9 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
-import { registerAllIpcHandlers } from '../ipc';
+import { registerAllIpcHandlers, unregisterAllIpcHandlers } from '../ipc';
 import { initializeDatabase } from '../data/database';
-import { cleanupAllHandlers } from '../utils/ipc-cleanup';
+import { logger } from '../utils/logger';
+import { errorHandler, setupGlobalErrorHandling } from '../utils/errorHandler';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -34,11 +35,17 @@ function createWindow() {
 
 app.whenReady().then(async () => {
   try {
+    // 设置全局错误处理
+    setupGlobalErrorHandling(logger, errorHandler);
+    logger.info('App', 'Meme Master Pro v2.0 启动');
+
     // 初始化数据库
     await initializeDatabase();
+    logger.info('Database', '数据库初始化完成');
 
     // 注册所有IPC处理器
     registerAllIpcHandlers();
+    logger.info('IPC', '所有IPC处理器已注册');
 
     // 创建窗口
     createWindow();
@@ -48,8 +55,10 @@ app.whenReady().then(async () => {
         createWindow();
       }
     });
-  } catch (error) {
-    console.error('Failed to initialize app:', error);
+  } catch (error: any) {
+    logger.fatal('App', '应用启动失败', error);
+    errorHandler.handleError(error, require('../utils/errorHandler').ErrorCategory.UNKNOWN, 'App Startup');
+    throw error;
   }
 });
 
@@ -60,8 +69,19 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
-  // 清理所有IPC处理器
-  cleanupAllHandlers();
+  try {
+    logger.info('App', '应用正在退出，正在清理资源...');
+
+    // 清理所有IPC处理器
+    unregisterAllIpcHandlers();
+    logger.info('IPC', '所有IPC处理器已注销');
+
+    // 清理日志系统
+    logger.cleanup();
+    logger.info('App', '资源清理完成');
+  } catch (error: any) {
+    logger.fatal('App', '清理资源时出错', error);
+  }
 });
 
 export { mainWindow };

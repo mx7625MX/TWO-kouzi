@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ConfigProvider, theme } from 'antd';
+import zhCN from 'antd/locale/zh_CN';
 import Sidebar from './components/Sidebar';
 import WalletManager from './pages/WalletManager';
 import LaunchToken from './pages/LaunchToken';
@@ -13,6 +15,7 @@ import FlashSell from './pages/FlashSell';
 import TransactionHistory from './pages/TransactionHistory';
 import DataManagement from './pages/DataManagement';
 import Settings from './pages/Settings';
+import './styles/index.css';
 
 type Page = 'wallet' | 'launch' | 'mev' | 'ai' | 'trade' | 'risk' | 'market' | 'hotspot' | 'profit' | 'flash' | 'history' | 'data' | 'settings';
 
@@ -53,12 +56,24 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <Sidebar currentPage={currentPage} onSelectPage={setCurrentPage} />
-      <main className="main-content">
-        {renderPage()}
-      </main>
-    </div>
+    <ConfigProvider
+      locale={zhCN}
+      theme={{
+        algorithm: theme.darkAlgorithm,
+        token: {
+          colorPrimary: '#7b2cbf',
+          colorBgContainer: '#1a1a2e',
+          colorBgLayout: '#0f0f1a',
+        },
+      }}
+    >
+      <div className="app">
+        <Sidebar currentPage={currentPage} onSelectPage={setCurrentPage} />
+        <main className="main-content">
+          {renderPage()}
+        </main>
+      </div>
+    </ConfigProvider>
   );
 }
 

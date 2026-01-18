@@ -1,0 +1,131 @@
+.wallet-list-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.wallet-list-card {
+  max-width: 1200px;
+  margin: 0 auto;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.6s ease-out;
+}
+
+.wallet-list-header {
+  margin-bottom: 24px;
+}
+
+.wallet-list-title {
+  margin: 0 !important;
+  color: #1a1a2e;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wallet-list-description {
+  color: #8c8c8c;
+  margin: 8px 0 0 0;
+  font-size: 14px;
+}
+
+/* 表格样式 */
+.wallet-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wallet-table .ant-table {
+  font-size: 14px;
+}
+
+.wallet-table .ant-table-thead > tr > th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: 600;
+  border: none;
+}
+
+.wallet-table .ant-table-tbody > tr:hover > td {
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.wallet-name {
+  font-weight: 500;
+  color: #1a1a2e;
+}
+
+.wallet-address {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  color: #595959;
+  display: inline-block;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wallet-address:hover {
+  color: #667eea;
+  cursor: pointer;
+}
+
+/* 分页样式 */
+.wallet-table .ant-pagination {
+  margin-top: 24px;
+}
+
+.wallet-table .ant-pagination-item-active {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.wallet-table .ant-pagination-item-active a {
+  color: white;
+}
+
+.wallet-table .ant-pagination-item:hover {
+  border-color: #667eea;
+}
+
+.wallet-table .ant-pagination-item:hover a {
+  color: #667eea;
+}
+
+/* Tag样式 */
+.ant-tag {
+  font-weight: 500;
+  padding: 2px 12px;
+  border-radius: 12px;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .wallet-list-container {
+    padding: 12px;
+  }
+
+  .wallet-address {
+    max-width: 150px;
+  }
+
+  .wallet-table .ant-table {
+    font-size: 12px;
+  }
+}
