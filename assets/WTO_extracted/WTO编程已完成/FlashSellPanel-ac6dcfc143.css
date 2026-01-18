@@ -1,0 +1,402 @@
+/* 闪电卖出面板样式 */
+.flash-sell-panel {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 24px;
+  color: white;
+  margin-top: 20px;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+}
+
+.flash-sell-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.flash-sell-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flash-sell-header h3::before {
+  content: '⚡';
+  font-size: 24px;
+}
+
+/* 开关样式 */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: 0.4s;
+  border-radius: 28px;
+}
+
+.toggle:before {
+  position: absolute;
+  content: '';
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked + .toggle {
+  background-color: #4ade80;
+}
+
+.toggle-switch input:checked + .toggle:before {
+  transform: translateX(24px);
+}
+
+/* 表单组 */
+.flash-sell-content .form-group {
+  margin-bottom: 20px;
+}
+
+.flash-sell-content label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.flash-sell-content input,
+.flash-sell-content select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.flash-sell-content input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.flash-sell-content input:focus,
+.flash-sell-content select:focus {
+  outline: none;
+  border-color: #4ade80;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.flash-sell-content input:disabled,
+.flash-sell-content select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.flash-sell-content small {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* 时间预设按钮 */
+.time-presets {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.time-presets button {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.time-presets button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.time-presets button.active {
+  background: #4ade80;
+  border-color: #4ade80;
+  color: #1a1a2e;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+}
+
+.time-presets button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 分批配置 */
+.batch-config {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.batch-config input {
+  flex: 1;
+  min-width: 80px;
+  padding: 8px 12px;
+}
+
+.batch-config span {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.remove-batch-btn {
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-batch-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+.add-batch-btn {
+  width: 100%;
+  padding: 12px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 8px;
+}
+
+.add-batch-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #4ade80;
+}
+
+/* 闪电卖出任务列表 */
+.flash-sell-tasks {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.flash-sell-tasks h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.flash-sell-task {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.flash-sell-task:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.task-info {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex: 1;
+}
+
+.task-network {
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.task-address {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.task-status {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.task-status.status-pending {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.task-status.status-running {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.task-status.status-completed {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.task-status.status-cancelled {
+  background: rgba(156, 163, 175, 0.2);
+  color: #9ca3af;
+}
+
+.task-status.status-failed {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cancel-btn {
+  padding: 8px 16px;
+  border: 2px solid #ef4444;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .flash-sell-panel {
+    padding: 16px;
+  }
+
+  .flash-sell-header h3 {
+    font-size: 18px;
+  }
+
+  .time-presets {
+    gap: 6px;
+  }
+
+  .time-presets button {
+    min-width: 60px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .flash-sell-task {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .task-info {
+    width: 100%;
+  }
+
+  .task-actions {
+    width: 100%;
+  }
+
+  .cancel-btn {
+    width: 100%;
+  }
+}
+
+/* 暗色主题适配 */
+@media (prefers-color-scheme: dark) {
+  .flash-sell-panel {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  }
+
+  .flash-sell-content input,
+  .flash-sell-content select {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .flash-sell-content input:focus,
+  .flash-sell-content select:focus {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
